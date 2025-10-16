@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spam Detector</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      padding: 40px 20px;
+      background: linear-gradient(to bottom right, #e0f7fa, #ffffff);
+      text-align: center;
+      margin: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      margin-bottom: 24px;
+      font-size: 28px;
+      color: #333;
+    }
+    input, textarea {
+      width: 100%;
+      font-size: 16px;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+      transition: border-color 0.3s ease;
+    }
+    input:focus, textarea:focus {
+      border-color: #4CAF50;
+      outline: none;
+    }
+    textarea {
+      height: 150px;
+      resize: vertical;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+      transition: all 0.3s ease;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Spam Detector</h1>
+    <input type="text" id="subject" placeholder="Subject"><br>
+    <textarea id="message" placeholder="Type your message here..."></textarea><br>
+    <button onclick="checkSpam()">Check</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function checkSpam() {
+      const subject = document.getElementById("subject").value.trim();
+      const message = document.getElementById("message").value.trim();
+      const resultDiv = document.getElementById("result");
+
+      if (!subject && !message) {
+        resultDiv.innerText = "Please enter a subject or message.";
+        resultDiv.style.color = "#d32f2f";
+        return;
+      }
+
+      fetch("/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ subject, message })
+      })
+      .then(response => response.json())
+      .then(data => {
+        resultDiv.innerText = `Prediction: ${data.prediction}`;
+        resultDiv.style.color = data.prediction === "Spam" ? "#d32f2f" : "#388e3c";
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        resultDiv.innerText = "Error connecting to server.";
+        resultDiv.style.color = "#d32f2f";
+      });
+    }
+  </script>
+
+</body>
+</html>

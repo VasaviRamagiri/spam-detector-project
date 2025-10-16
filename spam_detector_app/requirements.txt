@@ -1,0 +1,7 @@
+Flask
+numpy
+joblib
+tensorflow==2.16.1   
+transformers
+# The production server needed to run Flask apps on platforms like Render or Heroku
+gunicorn
